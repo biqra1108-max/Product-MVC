@@ -7,7 +7,7 @@ import { createUser, loginUser } from "../controller/user.js";
 const router = express.Router();
 
 router.post("/login", loginUser);
-router.post("/createusers", createUser);
+router.post("/register", createUser);
 router.post("/addproducts", saveProductController);
 router.get("/products", getProductsController);
 
