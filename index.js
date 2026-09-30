@@ -1,42 +1,29 @@
 import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
-import {connectDB} from "./utlis/DB.js";
+import { connectDB } from "./utlis/DB.js";
 import UserRoutes from "./routes/user.js";
-import{hashPassword, comparePassword} from "./utlis/bcrypt.js";
 import dns from "node:dns/promises";
 
-
-dns.setServers(["1.1.1.1","8.8.8.8"])
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 dotenv.config();
 connectDB();
 
 const app = express();
- 
-app.use(cors());
+
+// CORS ko yeh configuration dein taaki har origin allow ho jaye aur credentials bhi chal sakein
+app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
+
 app.use(express.json());
-app.use("/users", UserRoutes);
+app.use("/api", UserRoutes);
 
-
-app.listen(5050,()=>{
-    console.log("Server is runing on port 5050");
+const PORT = 5050; // Ya jo port aap use kar rahe hain
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
-/*const payload = {
-    userId: "12345",
-    type: "admin",
-};
-const token = signJWT(payload);
-console.log("Generated JWT:", token);
-
-const decoded = verifyJWT(token);
-console.log("Decoded JWT:", decoded);*/
-
-
-const plainPassword = "123456789";
-
-const hashedPassword = await hashPassword(plainPassword);
-console.log("Hashed Password:", hashedPassword);
-console.log("plainPassword:",plainPassword);
-
-console.log(await comparePassword(plainPassword, hashedPassword));

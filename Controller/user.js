@@ -9,13 +9,11 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ error: "Email and password required" });
         }
         
-        // Pehle check karein ke user database mein mojood hai ya nahi
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        // Jab user mil jaye, tab password compare karein
         const isPasswordValid = await user.comparePassword(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Invalid credentials" });
@@ -31,12 +29,20 @@ export const loginUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ error: "Email and password required" });
+        const { fullName, username, email, password } = req.body;
+        if (!fullName || !username || !email || !password) {
+            return res.status(400).json({ error: "All fields are required" });
         }
+        
         const encryptedPassword = await hashPassword(password);
-        const newUser = new User({ email: email, password: encryptedPassword });
+        
+        const newUser = new User({ 
+            fullName, 
+            username, 
+            email, 
+            password: encryptedPassword 
+        });
+        
         await newUser.save();
         res.status(201).json({ message: "User created successfully" });
     } catch (err) {
