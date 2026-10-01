@@ -12,13 +12,36 @@ connectDB();
 
 const app = express();
 
-// CORS ko yeh configuration dein taaki har origin allow ho jaye aur credentials bhi chal sakein
+// CORS ko yeh configuration dein taaki har origin allow ho jaye aur credentials bhi chal sakeinconst express = require('express');
+
+
+// Permanent CORS configuration
+// // ya simple cors package
 app.use(cors({
-    origin: ["http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+  origin: [
+    'https://statuesque-pasca-1a892c.netlify.app', // Yeh aapka naya Netlify URL hai
+    'http://localhost:5173',
+    'http://localhost:3000'
+  ],
+  credentials: true
 }));
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Agar request server-to-server ya Postman se ho (jiska origin nahi hota)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS policy violation: This origin is not allowed.'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Zaroori hai taake preflight OPTIONS requests fail na hon
+app.options('*', cors());
 
 app.use(express.json());
 app.use("/api", UserRoutes);
