@@ -25,7 +25,9 @@ app.use(cors({
 }));
 
 // Zaroori hai taake preflight OPTIONS requests fail na hon ( yahan * ki jagah /* kar diya hai )
-app.options('/*', cors());
+app.use((req,res,next)=>{
+  res.status(404).send("Not Found");
+});
 
 app.use(express.json());
 app.use("/api", UserRoutes);
