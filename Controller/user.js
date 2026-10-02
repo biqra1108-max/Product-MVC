@@ -1,6 +1,7 @@
 import { signJWT } from "../utlis/jwt.js";
 import User from "../model/user.js";
 import { hashPassword } from "../utlis/bcrypt.js";
+import bcrypt from "bcrypt"; // Ensure bcrypt is available, or use your utility
 
 export const loginUser = async (req, res) => {
     try {
@@ -14,7 +15,8 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const isPasswordValid = await user.comparePassword(password, user.password);
+        // Direct bcrypt compare (agar schema mein method na ho toh yeh kabhi fail nahi hoga)
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
@@ -23,7 +25,7 @@ export const loginUser = async (req, res) => {
         res.json({ token });
     } catch (err) {
         console.error("Login Error:", err);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: err.message || "Internal server error" });
     }
 };
 
@@ -47,6 +49,6 @@ export const createUser = async (req, res) => {
         res.status(201).json({ message: "User created successfully" });
     } catch (err) {
         console.error("Signup Error:", err);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: err.message || "Internal server error" });
     }
 };

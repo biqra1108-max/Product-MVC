@@ -14,23 +14,18 @@ const app = express();
 
 // CORS Configuration
 app.use(cors({
-  origin: [
-    'https://statuesque-pasca-1a892c.netlify.app', // Aapka Netlify URL
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: true,
+  credentials: true
+
 }));
 
-// Zaroori hai taake preflight OPTIONS requests fail na hon ( yahan * ki jagah /* kar diya hai )
-app.use((req,res,next)=>{
-  res.status(404).send("Not Found");
-});
+
 
 app.use(express.json());
 app.use("/api", UserRoutes);
+app.use((req,res,next)=>{
+  res.status(404).send("Not Found");
+});
 
 const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => {
